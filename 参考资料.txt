@@ -17,3 +17,4 @@ koa:
     预览H5：触发保存tplPreviewH5, 保存回调成功后getTplH5(id)
     预览PC：触发保存tplPreviewPC, 保存回调成功后触发a链接跳转，在新页面getTplPC(id)
     新建页面时弹出输入name才能保存的模态框
+    服务器端渲染前端preview过来的content，输出页面:PC.html/xxx,H5.html/xxx
