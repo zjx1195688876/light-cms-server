@@ -17,7 +17,35 @@ module.exports = {
         };
         await TplList.find({}, opts).skip(skipnum).limit(Number(limit)).sort(sort).exec()
         .then(res => {
-            // 返回为JSON格式，需使用JSON.stringify()
+            ctx.body = {
+                code: 200,
+                success: true,
+                message: '获取模板列表成功',
+                body: res
+            };
+        }, err => {
+            if (err) {
+                result.message = err;
+            }
+            ctx.body = result;
+        });
+    },
+    async addTpl (ctx) {
+        const { id, imgUrl, title, desc, date } = ctx.request.body;
+        let tplItem = new TplList({
+            id,
+            imgUrl,
+            title,
+            desc,
+            date
+        });
+        let result = {
+            code: -1,
+            success: false,
+            message: '添加模板错误'
+        };
+        await tplItem.save()
+        .then(res => {
             ctx.body = {
                 code: 200,
                 success: true,

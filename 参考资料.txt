@@ -10,3 +10,10 @@ koa:
 	https://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000/001471087582981d6c0ea265bf241b59a04fa6f61d767f6000
 	http://koa.bootcss.com/#context
     https://chenshenhai.github.io/koa2-note/note/project/session.html
+
+    进入到新建模板的时候获取时间+hash作为id，确保唯一且预览和保存可以覆盖数据库
+    新建模板时按保存，先弹出框要输入title和desc才能保存，不然不会触发保存。
+    点击保存时触发保存tplList、保存tplContent、保存tplPreviewH5、保存tplPreviewPC 四个异步操作，id相同为时间+hash
+    预览H5：触发保存tplPreviewH5, 保存回调成功后getTplH5(id)
+    预览PC：触发保存tplPreviewPC, 保存回调成功后触发a链接跳转，在新页面getTplPC(id)
+    新建页面时弹出输入name才能保存的模态框
