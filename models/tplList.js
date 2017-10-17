@@ -3,9 +3,11 @@ const Schema = mongoose.Schema;
 
 let tplListSchema = new Schema({
     id: {type: String, index: true}, // id作为索引
+    imgName: String,
     imgUrl: String,
     title: String,
     desc: String,
+    content: String,
     date: { type: Date, default: Date.now }
 });
 

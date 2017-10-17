@@ -1,4 +1,8 @@
 const TplList = require('../models/tplList.js');
+const opts = {  // 返回给前台的结果中不包含数据库特有的_id和__v
+    '_id': 0,
+    '__v': 0
+};
 
 module.exports = {
     async getTplList (ctx) {
@@ -9,11 +13,6 @@ module.exports = {
             code: -1,
             success: false,
             message: '获取模板列表错误'
-        };
-        // 返回给前台的结果中不包含数据库特有的_id和__v
-        let opts = {
-            '_id': 0,
-            '__v': 0
         };
         await TplList.find({}, opts).skip(skipnum).limit(Number(limit)).sort(sort).exec()
         .then(res => {
@@ -30,14 +29,38 @@ module.exports = {
             ctx.body = result;
         });
     },
+    async getTplItemById (ctx) {
+        const { id } = ctx.query;
+        let conditon = {'id': id};
+        let result = {
+            code: -1,
+            success: false,
+            message: '获取模板内容错误'
+        };
+        await TplList.findOne(conditon, opts).then((res) => {
+            ctx.body = {
+                code: 200,
+                success: true,
+                message: '获取模板列表成功',
+                body: res
+            };
+        }, err => {
+            if (err) {
+                result.message = err;
+            }
+            ctx.body = result;
+        });
+    },
     async addTpl (ctx) {
-        const { id, imgUrl, title, desc, date } = ctx.request.body;
+        const { id, imgName, imgUrl, title, desc, content, date } = ctx.request.body;
         let tplItem = new TplList({
             id,
+            imgName,
             imgUrl,
             title,
             desc,
-            date
+            date,
+            content
         });
         let result = {
             code: -1,
