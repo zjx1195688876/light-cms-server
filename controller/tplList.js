@@ -35,13 +35,13 @@ module.exports = {
         let result = {
             code: -1,
             success: false,
-            message: '获取模板内容错误'
+            message: '获取模板错误'
         };
         await TplList.findOne(conditon, opts).then((res) => {
             ctx.body = {
                 code: 200,
                 success: true,
-                message: '获取模板列表成功',
+                message: '获取模板成功',
                 body: res
             };
         }, err => {
@@ -52,15 +52,14 @@ module.exports = {
         });
     },
     async addTpl (ctx) {
-        const { id, imgName, imgUrl, title, desc, content, date } = ctx.request.body;
+        const { id, imgName, imgUrl, title, desc, date } = ctx.request.body;
         let tplItem = new TplList({
             id,
             imgName,
             imgUrl,
             title,
             desc,
-            date,
-            content
+            date
         });
         let result = {
             code: -1,
@@ -72,7 +71,7 @@ module.exports = {
             ctx.body = {
                 code: 200,
                 success: true,
-                message: '获取模板列表成功',
+                message: '添加模板成功',
                 body: res
             };
         }, err => {
