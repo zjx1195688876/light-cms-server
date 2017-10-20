@@ -18,3 +18,17 @@ koa:
     预览PC：触发保存/*tplPreviewPC*/ tplContent, 保存回调成功后触发a链接跳转，在新页面getTplPC(id)
     新建页面时弹出输入name才能保存的模态框
     服务器端渲染前端preview过来的content，输出页面:PC.html/xxx,H5.html/xxx
+
+markdown to html:
+    http://www.letiantian.me/2014-10-19-node-markdown-marked-convert-markdown/
+
+
+mongoose save file(html file):
+    https://stackoverflow.com/questions/27167336/store-files-in-mongodb-using-mongoose
+
+临时NOS:
+    http://doc.hz.netease.com/pages/viewpage.action?pageId=80293502
+    https://git.hz.netease.com/nos/nos-document/blob/master/WanProxy/NosTokenAndPolicy.md
+    http://cloud.netease.com/manual/#nos
+    http://doc.hz.netease.com/display/nos/Home
+    https://g.hz.netease.com/kaolafed/kaola-material-system/blob/master/server/helpers/nos.js

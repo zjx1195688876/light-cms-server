@@ -52,14 +52,14 @@ module.exports = {
         });
     },
     async addTpl (ctx) {
-        const { id, imgName, imgUrl, title, desc, date } = ctx.request.body;
+        const { id, imgName, imgUrl, title, desc } = ctx.request.body;
         let tplItem = new TplList({
             id,
             imgName,
             imgUrl,
             title,
             desc,
-            date
+            date: new Date()
         });
         let result = {
             code: -1,
@@ -72,6 +72,37 @@ module.exports = {
                 code: 200,
                 success: true,
                 message: '添加模板成功',
+                body: res
+            };
+        }, err => {
+            if (err) {
+                result.message = err;
+            }
+            ctx.body = result;
+        });
+    },
+    async updateTpl (ctx) {
+        const { id, imgName, imgUrl, title, desc } = ctx.request.body;
+        const condition = {'id': id};
+        let opts = {
+            id,
+            imgName,
+            imgUrl,
+            title,
+            desc,
+            date: new Date()
+        };
+        let result = {
+            code: -1,
+            success: false,
+            message: '更新模板错误'
+        };
+        await TplList.update(condition, opts)
+        .then(res => {
+            ctx.body = {
+                code: 200,
+                success: true,
+                message: '更新模板成功',
                 body: res
             };
         }, err => {
