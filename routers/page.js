@@ -6,7 +6,7 @@ const routers = router
     .get('/getPageById', Page.getPageById)
     .post('/addPage', Page.addPage)
     .post('/updatePage', Page.updatePage)
-    .post('/removePage', Page.removePage);
-    // .post('/addTpl', Page.addPage);
+    .post('/removePage', Page.removePage)
+    .post('/addFile', Page.addFile);
 
 module.exports = routers;

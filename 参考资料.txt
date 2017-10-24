@@ -4,6 +4,7 @@ mongoDB:
 	http://mongoosejs.com/
 	http://www.cnblogs.com/zhongweiv/p/mongoose.html
 	http://www.mongodb.org.cn/drivers/5.html
+    https://www.villainhr.com/page/2016/05/11/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAmongoose
 
 koa: 
 

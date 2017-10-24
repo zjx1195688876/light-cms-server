@@ -5,6 +5,11 @@ const path = require('path');
 const app = new Koa();
 const bodyParser = require('koa-bodyparser');
 const cors = require('koa2-cors');
+const serve = require('koa-static');
+
+app.use(serve(
+    path.join(__dirname, './static')
+));
 
 // 使用ctx.body解析中间件
 app.use(bodyParser());
