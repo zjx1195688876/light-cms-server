@@ -1,10 +1,9 @@
-const mongoose = require('../models/mongoose');
-// const formidable = require('formidable');
 const path = require('path');
 const fs = require('fs');
-const grid = require('gridfs-stream');
 const markdown = require('markdown').markdown;
 const Page = require('../models/page.js');
+const PCTpl = require('../template/pc.js');
+const H5Tpl = require('../template/h5.js');
 const opts = {  // 返回给前台的结果中不包含数据库特有的_id和__v
     '_id': 0,
     '__v': 0
@@ -145,72 +144,46 @@ module.exports = {
     async addFile (ctx) {
         const { name, title, content } = ctx.request.body;
         const contentHTML = markdown.toHTML(content || '');
-        // const gfs = grid(mongoose.connection.db, mongoose.mongo);
         /*eslint-disable*/
         const pcFile = path.resolve(__dirname, '../static/pages/pc/' + name + '.html');
         const h5File = path.resolve(__dirname, '../static/pages/h5/' + name + '.html');
         /*eslint-enable*/
-        const pcFileData = `<!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <title>${title}</title>
-                <style type="text/css">
-                    * {margin: 0; padding: 0;}
-                    .header, .footer { height: 50px; line-height: 50px; font-size: 13px; text-align: center; background-color: #e5e5e5; }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    这是header
-                </div>
-                <div class="container">
-                    ${contentHTML}
-                </div>
-                <div class="footer">
-                    这是footer
-                </div>
-            </body>
-            </html>`;
-        const h5FileData = `<!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui" />
-                <meta name="apple-mobile-web-app-capable" content="yes" />
-                <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-                <meta name="format-detection"content="telephone=no,email=no" />
-                <title>${title}</title>
-                <style type="text/css">
-                    * {margin: 0; padding: 0;}
-                    .header, .footer { height: 50px; line-height: 50px; font-size: 13px; text-align: center; background-color: #e5e5e5; }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    这是header
-                </div>
-                <div class="container">
-                    ${contentHTML}
-                </div>
-                <div class="footer">
-                    这是footer
-                </div>
-            </body>
-            </html>`;
-        fs.writeFile(pcFile, pcFileData, err => {
-            if (err) throw err;
+        const pcFileData = PCTpl(title, contentHTML);
+        const h5FileData = H5Tpl(title, contentHTML);
+
+        const writeFilePromise = (file, fileData) => {
+            return new Promise((resolve, reject) => {
+                fs.writeFile(file, fileData, err => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve('success');
+                    };
+                });
+            });
+        };
+        const pcWriteFile = writeFilePromise(pcFile, pcFileData);
+        const h5WriteFile = writeFilePromise(h5File, h5FileData);
+
+        await Promise.all([pcWriteFile, h5WriteFile])
+        .then(([pcRes, h5Res]) => {
+            if (pcRes === 'success' && h5Res === 'success') {
+                ctx.body = {
+                    code: 200,
+                    success: true
+                };
+            } else {
+                ctx.body = {
+                    code: -1,
+                    success: false
+                };
+            }
+        })
+        .catch(() => {
+            ctx.body = {
+                code: -1,
+                success: false
+            };
         });
-        fs.writeFile(h5File, h5FileData, err => {
-            if (err) throw err;
-        });
-        // let writestreamPc = gfs.createWriteStream({
-        //     filename: name
-        // });
-        // let writestreamH5 = gfs.createWriteStream({
-        //     filename: name
-        // });
-        // fs.createReadStream(pcFile).pipe(writestreamPc);
-        // fs.createReadStream(h5File).pipe(writestreamH5);
     }
 };
