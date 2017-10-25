@@ -27,6 +27,10 @@ markdown to html:
 mongoose save file(html file):
     https://stackoverflow.com/questions/27167336/store-files-in-mongodb-using-mongoose
 
+hash:
+    https://codeday.me/bug/20170623/28733.html
+    https://stackoverflow.com/questions/7480158/how-do-i-use-node-js-crypto-to-create-a-hmac-sha1-hash
+
 临时NOS:
     http://doc.hz.netease.com/pages/viewpage.action?pageId=80293502
     https://git.hz.netease.com/nos/nos-document/blob/master/WanProxy/NosTokenAndPolicy.md

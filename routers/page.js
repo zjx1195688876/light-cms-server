@@ -2,11 +2,11 @@ const router = require('koa-router')();
 const Page = require('../controller/page');
 
 const routers = router
+    .get('/getTotal', Page.getTotal)
     .get('/getPageList', Page.getPageList)
     .get('/getPageById', Page.getPageById)
-    .post('/addPage', Page.addPage)
-    .post('/updatePage', Page.updatePage)
     .post('/removePage', Page.removePage)
-    .post('/addFile', Page.addFile);
+    .post('/addOrUpdatePage', Page.addOrUpdatePage)
+    .post('/addOrUpdateFile', Page.addOrUpdateFile);
 
 module.exports = routers;

@@ -53,52 +53,26 @@ module.exports = {
             ctx.body = result;
         });
     },
-    async addContent (ctx) {
+    async addOrUpdateContent (ctx) {
         const { id, content, date } = ctx.request.body;
-        let tplContent = new EditorContent({
+        let editorContent = {
             id,
             content,
             date
-        });
+        };
+        delete editorContent._id;
         let result = {
             code: -1,
             success: false,
-            message: '添加模板错误'
+            message: '错误'
         };
-        await tplContent.save()
+        // new: true 显示新建的collection的内容，即res
+        await EditorContent.findOneAndUpdate({'id': id}, editorContent, {upsert: true, new: true, setDefaultsOnInsert: true})
         .then(res => {
             ctx.body = {
                 code: 200,
                 success: true,
-                message: '添加模板成功',
-                body: res
-            };
-        }, err => {
-            if (err) {
-                result.message = err;
-            }
-            ctx.body = result;
-        });
-    },
-    async updateContent (ctx) {
-        const { id, content } = ctx.request.body;
-        const condition = {'id': id};
-        let opts = {
-            id,
-            content,
-            date: new Date()
-        };
-        let result = {
-            code: -1,
-            success: false,
-            message: '更新模板错误'
-        };
-        await EditorContent.update(condition, opts)
-        .then(res => {
-            ctx.body = {
-                code: 200,
-                success: true,
-                message: '更新模板成功',
+                message: '成功',
                 body: res
             };
         }, err => {

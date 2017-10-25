@@ -10,6 +10,27 @@ const opts = {  // 返回给前台的结果中不包含数据库特有的_id和_
 };
 
 module.exports = {
+    async getTotal (ctx) {
+        let result = {
+            code: -1,
+            success: false,
+            message: '获取总数错误'
+        };
+        await Page.count({disable: false})
+        .then(res => {
+            ctx.body = {
+                code: 200,
+                success: true,
+                message: '获取总数成功',
+                total: res
+            };
+        }, err => {
+            if (err) {
+                result.message = err;
+            }
+            ctx.body = result;
+        });
+    },
     async getPageList (ctx) {
         const { limit, currentPage } = ctx.query;
         const sort = {'date': -1};        // 排序（按时间倒序）
@@ -56,54 +77,27 @@ module.exports = {
             ctx.body = result;
         });
     },
-    async addPage (ctx) {
+    async addOrUpdatePage (ctx) {
         const { id, title, name } = ctx.request.body;
-        let page = new Page({
-            id,
-            title,
-            name,
-            date: new Date()
-        });
-        let result = {
-            code: -1,
-            success: false,
-            message: '添加页面错误'
-        };
-        await page.save()
-        .then(res => {
-            ctx.body = {
-                code: 200,
-                success: true,
-                message: '添加页面成功',
-                body: res
-            };
-        }, err => {
-            if (err) {
-                result.message = err;
-            }
-            ctx.body = result;
-        });
-    },
-    async updatePage (ctx) {
-        const { id, title, name } = ctx.request.body;
-        const condition = {'id': id};
-        let opts = {
+        let page = {
             id,
             title,
             name,
             date: new Date()
         };
+        delete page._id;
         let result = {
             code: -1,
             success: false,
-            message: '更新页面错误'
+            message: '错误'
         };
-        await Page.update(condition, opts)
+        // new: true 显示新建的collection的内容，即res
+        await Page.findOneAndUpdate({'id': id}, page, {upsert: true, new: true, setDefaultsOnInsert: true})
         .then(res => {
             ctx.body = {
                 code: 200,
                 success: true,
-                message: '更新页面成功',
+                message: '成功',
                 body: res
             };
         }, err => {
@@ -141,12 +135,12 @@ module.exports = {
             ctx.body = result;
         });
     },
-    async addFile (ctx) {
-        const { name, title, content } = ctx.request.body;
+    async addOrUpdateFile (ctx) {
+        const { id, title, content } = ctx.request.body;
         const contentHTML = markdown.toHTML(content || '');
         /*eslint-disable*/
-        const pcFile = path.resolve(__dirname, '../static/pages/pc/' + name + '.html');
-        const h5File = path.resolve(__dirname, '../static/pages/h5/' + name + '.html');
+        const pcFile = path.resolve(__dirname, '../static/pages/pc/' + id + '.html');
+        const h5File = path.resolve(__dirname, '../static/pages/h5/' + id + '.html');
         /*eslint-enable*/
         const pcFileData = PCTpl(title, contentHTML);
         const h5FileData = H5Tpl(title, contentHTML);

@@ -5,7 +5,6 @@ const routers = router
     // .get('/h5/:id', EditorContent.previewH5)
     // .get('/pc/:id', EditorContent.previewPC)
     .get('/getContentById', EditorContent.getContentById)
-    .post('/addContent', EditorContent.addContent)
-    .post('/updateContent', EditorContent.updateContent);
+    .post('/addOrUpdateContent', EditorContent.addOrUpdateContent);
 
 module.exports = routers;
