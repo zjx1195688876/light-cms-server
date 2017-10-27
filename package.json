@@ -4,7 +4,8 @@
   "description": "the server of a light content manage system",
   "author": "zhangjinxin <15757116071@163.com>",
   "scripts": {
-    "server": "node app.js"
+    "server": "dev.sh",
+    "build": "build.sh"
   },
   "dependencies": {
     "busboy": "^0.2.14",

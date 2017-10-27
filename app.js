@@ -6,6 +6,10 @@ const app = new Koa();
 const bodyParser = require('koa-bodyparser');
 const cors = require('koa2-cors');
 const serve = require('koa-static');
+// const session = require('koa-session');
+const config = require('./config');
+
+// app.use(session(config.session, app));
 
 app.use(serve(
     path.join(__dirname, './static')
@@ -17,7 +21,7 @@ app.use(bodyParser());
 // 支持跨域
 app.use(cors({
     origin (ctx) {
-        return '*';
+        return config.origin;
     },
     exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
     maxAge: 5,
