@@ -1,4 +1,4 @@
-const mongoose = require('./mongoose.js');
+const mongoose = require('./mongoose');
 const Schema = mongoose.Schema;
 
 let editorContentSchema = new Schema({

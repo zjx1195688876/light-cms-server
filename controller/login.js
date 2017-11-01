@@ -1,6 +1,6 @@
 // const markdown = require('markdown').markdown;
 const crypto = require('crypto');
-const Login = require('../models/login.js');
+const Login = require('../models/login');
 const opts = {  // 返回给前台的结果中不包含数据库特有的_id和__v
     '_id': 0,
     '__v': 0

@@ -1,9 +1,10 @@
 const path = require('path');
 const fs = require('fs');
 const markdown = require('markdown').markdown;
-const Page = require('../models/page.js');
-const PCTpl = require('../template/pc.js');
-const H5Tpl = require('../template/h5.js');
+const Page = require('../models/page');
+const PCTpl = require('../template/pc');
+const H5Tpl = require('../template/h5');
+const Interceptor = require('../helpers/interceptor');
 const opts = {  // 返回给前台的结果中不包含数据库特有的_id和__v
     '_id': 0,
     '__v': 0
@@ -11,71 +12,21 @@ const opts = {  // 返回给前台的结果中不包含数据库特有的_id和_
 
 module.exports = {
     async getTotal (ctx) {
-        let result = {
-            code: -1,
-            success: false,
-            message: '获取总数错误'
-        };
-        await Page.count({disable: false})
-        .then(res => {
-            ctx.body = {
-                code: 200,
-                success: true,
-                message: '获取总数成功',
-                total: res
-            };
-        }, err => {
-            if (err) {
-                result.message = err;
-            }
-            ctx.body = result;
-        });
+        let cb = Page.count({disable: false});
+        await Interceptor(cb, ctx);
     },
     async getPageList (ctx) {
         const { limit, currentPage } = ctx.query;
         const sort = {'date': -1};        // 排序（按时间倒序）
         const skipnum = (Number(currentPage) - 1) * limit;   // 跳过数
-        let result = {
-            code: -1,
-            success: false,
-            message: '获取页面列表错误'
-        };
-        await Page.find({disable: false}, opts).skip(skipnum).limit(Number(limit)).sort(sort).exec()
-        .then(res => {
-            ctx.body = {
-                code: 200,
-                success: true,
-                message: '获取页面列表成功',
-                body: res
-            };
-        }, err => {
-            if (err) {
-                result.message = err;
-            }
-            ctx.body = result;
-        });
+        let cb = Page.find({disable: false}, opts).skip(skipnum).limit(Number(limit)).sort(sort).exec();
+        await Interceptor(cb, ctx);
     },
     async getPageById (ctx) {
         const { id } = ctx.query;
         let conditon = {'id': id};
-        let result = {
-            code: -1,
-            success: false,
-            message: '获取页面错误'
-        };
-        await Page.findOne(conditon, opts).then((res) => {
-            ctx.body = {
-                code: 200,
-                success: true,
-                message: '获取页面成功',
-                body: res
-            };
-        }, err => {
-            if (err) {
-                result.message = err;
-            }
-            ctx.body = result;
-        });
+        let cb = Page.findOne(conditon, opts);
+        await Interceptor(cb, ctx);
     },
     async addOrUpdatePage (ctx) {
         const { id, title, name } = ctx.request.body;
@@ -86,26 +37,9 @@ module.exports = {
             date: new Date()
         };
         delete page._id;
-        let result = {
-            code: -1,
-            success: false,
-            message: '错误'
-        };
         // new: true 显示新建的collection的内容，即res
-        await Page.findOneAndUpdate({'id': id}, page, {upsert: true, new: true, setDefaultsOnInsert: true})
-        .then(res => {
-            ctx.body = {
-                code: 200,
-                success: true,
-                message: '成功',
-                body: res
-            };
-        }, err => {
-            if (err) {
-                result.message = err;
-            }
-            ctx.body = result;
-        });
+        let cb = Page.findOneAndUpdate({'id': id}, page, {upsert: true, new: true, setDefaultsOnInsert: true});
+        await Interceptor(cb, ctx);
     },
     async removePage (ctx) {
         const { id } = ctx.request.body;
@@ -115,25 +49,8 @@ module.exports = {
             disable: true,
             date: new Date()
         };
-        let result = {
-            code: -1,
-            success: false,
-            message: '删除页面错误'
-        };
-        await Page.update(condition, opts)
-        .then(res => {
-            ctx.body = {
-                code: 200,
-                success: true,
-                message: '删除页面成功',
-                body: res
-            };
-        }, err => {
-            if (err) {
-                result.message = err;
-            }
-            ctx.body = result;
-        });
+        let cb = Page.update(condition, opts);
+        await Interceptor(cb, ctx);
     },
     async addOrUpdateFile (ctx) {
         const { id, title, content } = ctx.request.body;

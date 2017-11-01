@@ -1,5 +1,5 @@
 const Koa = require('koa');
-const routers = require('./routers/index.js');
+const routers = require('./routers/index');
 const views = require('koa-views');
 const path = require('path');
 const app = new Koa();

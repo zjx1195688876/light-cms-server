@@ -1,6 +1,6 @@
 const markdown = require('markdown').markdown;
-const Preview = require('../models/preview.js');
-
+const Preview = require('../models/preview');
+const Interceptor = require('../helpers/interceptor');
 const previewBase = async (ctx, client) => {
     // 返回给前台的结果中不包含数据库特有的_id和__v
     let condition = {'id': 1};
@@ -28,53 +28,15 @@ const previewBase = async (ctx, client) => {
 module.exports = {
     async updateContent (ctx) {
         const { content } = ctx.request.body;
-        const condition = {'id': 1};
-        let opts = {
+        let preview = {
             id: 1,
             content,
             date: new Date()
         };
-        let result = {
-            code: -1,
-            success: false,
-            message: '更新预览错误'
-        };
-        let isHasContent = await Preview.findOne(condition);
-        if (!isHasContent) {
-            let preview = new Preview({
-                id: 1,
-                content
-            });
-            await preview.save()
-            .then(res => {
-                ctx.body = {
-                    code: 200,
-                    success: true,
-                    message: '添加预览成功',
-                    body: res
-                };
-            }, err => {
-                if (err) {
-                    result.message = err;
-                }
-                ctx.body = result;
-            });
-        } else {
-            await Preview.update(condition, opts)
-            .then(res => {
-                ctx.body = {
-                    code: 200,
-                    success: true,
-                    message: '更新预览成功',
-                    body: res
-                };
-            }, err => {
-                if (err) {
-                    result.message = err;
-                }
-                ctx.body = result;
-            });
-        }
+        delete preview._id;
+        // new: true 显示新建的collection的内容，即res
+        let cb = Preview.findOneAndUpdate({'id': 1}, preview, {upsert: true, new: true, setDefaultsOnInsert: true});
+        await Interceptor(cb, ctx);
     },
     async previewH5 (ctx) {
         await previewBase(ctx, 'H5');
