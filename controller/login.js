@@ -80,5 +80,15 @@ module.exports = {
     async signIn (ctx) {
         const { userName, password } = ctx.request.body;
         await loginBase(ctx, {userName, password}, 'FROM_SIGNIN');
+    },
+    async signOut (ctx) {
+        ctx.cookies.set('user', null, {
+            maxAge: 0,
+            overwrite: true
+        });
+        ctx.body = {
+            code: 200,
+            success: true
+        };
     }
 };
