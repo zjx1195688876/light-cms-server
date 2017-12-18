@@ -16,10 +16,15 @@ module.exports = {
         await Interceptor(cb, ctx);
     },
     async getPageList (ctx) {
-        const { limit, currentPage } = ctx.query;
+        const { limit, currentPage, tag } = ctx.query;
         const sort = {'date': -1};        // 排序（按时间倒序）
         const skipnum = (Number(currentPage) - 1) * limit;   // 跳过数
-        let cb = Page.find({disable: false}, opts).skip(skipnum).limit(Number(limit)).sort(sort).exec();
+        let cb;
+        if (tag) {
+            cb = Page.find({name: new RegExp(tag, 'ig'), disable: false}, opts).skip(skipnum).limit(Number(limit)).sort(sort).exec();
+        } else {
+            cb = Page.find({disable: false}, opts).skip(skipnum).limit(Number(limit)).sort(sort).exec();
+        }
         await Interceptor(cb, ctx);
     },
     async getPageById (ctx) {

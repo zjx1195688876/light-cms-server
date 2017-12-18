@@ -11,10 +11,15 @@ module.exports = {
         await Interceptor(cb, ctx);
     },
     async getTplList (ctx) {
-        const { limit, currentPage } = ctx.query;
+        const { limit, currentPage, tag } = ctx.query;
         const sort = {'date': -1};        // 排序（按时间倒序）
         const skipnum = (Number(currentPage) - 1) * limit;   // 跳过数
-        let cb = TplList.find({}, opts).skip(skipnum).limit(Number(limit)).sort(sort).exec();
+        let cb;
+        if (tag) {
+            cb = TplList.find({ title: new RegExp(tag, 'ig') }, opts).skip(skipnum).limit(Number(limit)).sort(sort).exec();
+        } else {
+            cb = TplList.find({}, opts).skip(skipnum).limit(Number(limit)).sort(sort).exec();
+        }
         await Interceptor(cb, ctx);
     },
     async getTplItemById (ctx) {

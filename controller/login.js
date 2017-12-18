@@ -1,5 +1,7 @@
-// const markdown = require('markdown').markdown;
 const crypto = require('crypto');
+// const request = require('koa2-request');
+const request = require('request');
+const iconv = require('iconv-lite');
 const Login = require('../models/login');
 const opts = {  // 返回给前台的结果中不包含数据库特有的_id和__v
     '_id': 0,
@@ -7,7 +9,7 @@ const opts = {  // 返回给前台的结果中不包含数据库特有的_id和_
 };
 
 const loginBase = async(ctx, user, type = '') => {
-    let condition = {'userName': user.userName};
+    let condition = {'username': user.username};
     let result = {
         code: -1,
         success: false,
@@ -23,7 +25,7 @@ const loginBase = async(ctx, user, type = '') => {
                 success: true,
                 message: '登录成功',
                 body: {
-                    userName: res.userName
+                    username: res.username
                 }
             };
         } else {
@@ -41,8 +43,28 @@ const loginBase = async(ctx, user, type = '') => {
     });
 };
 
+const logoutBase = (ctx) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(true);
+        }, 0);
+    });
+};
+
+const relay = async() => {
+    return await timeout(5000);
+};
+
+const timeout = async(delay) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve('random');
+        }, delay);
+    });
+};
+
 const setCookie = (ctx, res) => {
-    const userInfo = `${res.userName},${res.password}`;
+    const userInfo = `${res.username},${res.password}`;
     const cipher = crypto.createCipher('aes192', 'Encrypt user information');
     cipher.update(userInfo);
     var userCookie = cipher.final('hex');
@@ -66,9 +88,9 @@ module.exports = {
         const userCookie = ctx.cookies.get('user');
         if (userCookie) {
             let user = getUserByCookie(userCookie);
-            let userName = user.split(',')[0];
+            let username = user.split(',')[0];
             let password = user.split(',')[1];
-            await loginBase(ctx, {userName, password});
+            await loginBase(ctx, {username, password});
         } else {
             ctx.body = {
                 code: -1,
@@ -78,17 +100,31 @@ module.exports = {
         }
     },
     async signIn (ctx) {
-        const { userName, password } = ctx.request.body;
-        await loginBase(ctx, {userName, password}, 'FROM_SIGNIN');
+        const { username, password } = ctx.request.body;
+        await loginBase(ctx, {username, password}, 'FROM_SIGNIN');
     },
-    async signOut (ctx) {
-        ctx.cookies.set('user', null, {
+    async signOut (ctx, next) {
+        const token = await relay();
+        ctx.cookies.set('user', '', {
             maxAge: 0,
             overwrite: true
         });
-        ctx.body = {
-            code: 200,
-            success: true
-        };
+        ctx.body = token;
+        // ctx.body = {
+        //     code: 200,
+        //     success: true
+        // };
+
+        await next();
+        // logoutBase().then(res => {
+        //     ctx.cookies.set('user', '', {
+        //         maxAge: 0,
+        //         overwrite: true
+        //     });
+        //     ctx.body = {
+        //         code: 200,
+        //         success: true
+        //     };
+        // });
     }
 };
