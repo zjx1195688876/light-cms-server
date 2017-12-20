@@ -43,19 +43,31 @@ const loginBase = async(ctx, user, type = '') => {
     });
 };
 
-const logoutBase = (ctx) => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(true);
-        }, 0);
-    });
-};
+// const logoutBase = (ctx) => {
+//     return new Promise((resolve) => {
+//         setTimeout(() => {
+//             resolve(true);
+//         }, 0);
+//     });
+// };
 
-const relay = async() => {
-    return await timeout(5000);
-};
+// const relay = async() => {
+//     return await timeout(0);
+// };
 
-const timeout = async(delay) => {
+// const timeout = async(delay) => {
+//     return new Promise((resolve, reject) => {
+//         setTimeout(() => {
+//             const obj = {
+//                 code: 200,
+//                 success: true
+//             };
+//             resolve(obj);
+//         }, delay);
+//     });
+// };
+
+const CASLogin = (ticket, service, serviceKey) => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve('random');
@@ -103,28 +115,28 @@ module.exports = {
         const { username, password } = ctx.request.body;
         await loginBase(ctx, {username, password}, 'FROM_SIGNIN');
     },
-    async signOut (ctx, next) {
-        const token = await relay();
-        ctx.cookies.set('user', '', {
-            maxAge: 0,
-            overwrite: true
-        });
-        ctx.body = token;
+    signOut (ctx) {
+        // const token = await relay();
+        // ctx.cookies.set('user', '', {
+        //     maxAge: 0,
+        //     overwrite: true
+        // });
+        // ctx.body = token;
         // ctx.body = {
         //     code: 200,
         //     success: true
         // };
 
-        await next();
+        // await next();
         // logoutBase().then(res => {
-        //     ctx.cookies.set('user', '', {
-        //         maxAge: 0,
-        //         overwrite: true
-        //     });
-        //     ctx.body = {
-        //         code: 200,
-        //         success: true
-        //     };
+        ctx.cookies.set('user', '', {
+            maxAge: 0,
+            overwrite: true
+        });
+        ctx.body = {
+            code: 200,
+            success: true
+        };
         // });
     }
 };
