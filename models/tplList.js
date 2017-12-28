@@ -7,6 +7,7 @@ let tplListSchema = new Schema({
     imgUrl: String,
     title: String,
     desc: String,
+    tplStyle: { type: String, default: '0' }, // 模板类型，0：markdown；1：富文本
     date: { type: Date, default: Date.now }
 });
 

@@ -11,15 +11,19 @@ module.exports = {
         await Interceptor(cb, ctx);
     },
     async getTplList (ctx) {
-        const { limit, currentPage, tag } = ctx.query;
+        const { limit, currentPage, tag, tplStyle } = ctx.query;
         const sort = {'date': -1};        // 排序（按时间倒序）
         const skipnum = (Number(currentPage) - 1) * limit;   // 跳过数
         let cb;
-        if (tag) {
-            cb = TplList.find({ title: new RegExp(tag, 'ig') }, opts).skip(skipnum).limit(Number(limit)).sort(sort).exec();
-        } else {
-            cb = TplList.find({}, opts).skip(skipnum).limit(Number(limit)).sort(sort).exec();
+        let option = {};
+        if (tag && tplStyle) {
+            option = { title: new RegExp(tag, 'ig'), tplStyle: tplStyle };
+        } else if (tag && !tplStyle) {
+            option = { title: new RegExp(tag, 'ig') };
+        } else if (!tag && tplStyle) {
+            option = { tplStyle: tplStyle };
         }
+        cb = TplList.find(option, opts).skip(skipnum).limit(Number(limit)).sort(sort).exec();
         await Interceptor(cb, ctx);
     },
     async getTplItemById (ctx) {
@@ -29,13 +33,14 @@ module.exports = {
         await Interceptor(cb, ctx);
     },
     async addOrUpdateTpl (ctx) {
-        const { id, imgName, imgUrl, title, desc } = ctx.request.body;
+        const { id, imgName, imgUrl, title, desc, tplStyle } = ctx.request.body;
         let tplItem = {
             id,
             imgName,
             imgUrl,
             title,
             desc,
+            tplStyle,
             date: new Date()
         };
         delete tplItem._id;

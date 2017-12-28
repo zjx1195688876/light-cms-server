@@ -13,10 +13,11 @@ module.exports = {
         await Interceptor(cb, ctx);
     },
     async addOrUpdateContent (ctx) {
-        const { id, content, date } = ctx.request.body;
+        const { id, content, tplStyle, date } = ctx.request.body;
         let editorContent = {
             id,
             content,
+            tplStyle,
             date
         };
         delete editorContent._id;
